@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<title>AeroGuardian AI</title>
+<style>
+body{margin:0;font-family:Arial;background:#07111a;color:#fff}
+header{background:#10344d;padding:12px;text-align:center;font-size:24px;font-weight:bold}
+nav{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;background:#0d2739;padding:10px}
+nav button{padding:10px;border:none;border-radius:6px;background:#1f7a8c;color:white;cursor:pointer}
+.page{display:none;padding:15px}.active{display:block}
+.card{background:#102433;border-radius:10px;padding:12px;margin:10px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px}
+img{width:100%;height:220px;object-fit:cover;border-radius:8px}
+input,select,textarea{width:100%;padding:8px;margin:4px 0}
+button.action{padding:10px;width:100%;background:#1f7a8c;color:#fff;border:none}
+.log{height:220px;overflow:auto;background:#000;padding:8px}
+.radar{width:350px;height:350px;border-radius:50%;position:relative;margin:auto;background:radial-gradient(circle,#123,#000);overflow:hidden;border:2px solid #2aa}
+.dot{width:10px;height:10px;background:red;border-radius:50%;position:absolute}
+.sweep{position:absolute;width:50%;height:2px;background:#0f9;left:50%;top:50%;transform-origin:left center;animation:spin 3s linear infinite}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.table{width:100%;border-collapse:collapse}.table td,.table th{border:1px solid #345;padding:6px}
+</style></head>
+<body>
+<header>✈ AeroGuardian AI - Airport Operations Platform</header>
+<nav>
+<button onclick="showPage('dashboard')">Dashboard</button>
+<button onclick="showPage('radar')">Radar</button>
+<button onclick="showPage('delay')">AI Delay</button>
+<button onclick="showPage('risk')">Risk</button>
+<button onclick="showPage('runway')">Runway</button>
+<button onclick="showPage('engineer')">Engineer</button>
+<button onclick="showPage('health')">Aircraft Health</button>
+<button onclick="showPage('logs')">Logs</button>
+</nav>
+
+<div id="dashboard" class="page active">
+<div class="card">
+<h2>🏢 AeroGuardian AI</h2>
+<label>Airport Name</label>
+<input id="airportName" value="Nairobi AI Aviation Hub">
+<button class="action" onclick="document.getElementById('airportDisplay').innerText=document.getElementById('airportName').value;">Update Airport</button>
+<h3 id="airportDisplay">Nairobi AI Aviation Hub</h3>
+<p>Integrated airport safety, maintenance and delay prediction platform.</p>
+</div>
+<div class="grid">
+<div class="card"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/Concorde_Alpha_Delta.jpg"><p>Concorde</p></div>
+<div class="card"><img src="https://upload.wikimedia.org/wikipedia/commons/0/0c/Airbus_A380_first_flight.jpg"><p>Airbus A380</p></div>
+<div class="card"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5f/Boeing_787_Dreamliner.jpg"><p>Boeing 787 Dreamliner</p></div>
+<div class="card"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/NASA_logo.svg/512px-NASA_logo.svg.png"><p>Aerospace Engineering</p></div>
+</div>
+</div>
+
+<div id="radar" class="page"><div class="card"><h3>Radar</h3>
+<div class="radar"><div class="sweep"></div><div class="dot" id="a1"></div><div class="dot" id="a2"></div><div class="dot" id="a3"></div></div>
+</div></div>
+
+<div id="delay" class="page"><div class="card">
+<h3>AI Delay Predictor</h3>
+<select id="weather"><option value="0">Clear</option><option value="30">Cloudy</option><option value="70">Storm</option></select>
+<select id="traffic"><option value="10">Low</option><option value="40">Medium</option><option value="80">High</option></select>
+<select id="runwayCond"><option value="0">Good</option><option value="30">Wet</option><option value="60">Damaged</option></select>
+<button class="action" onclick="predictDelay()">Predict</button>
+<h2 id="delayOut">Delay: --%</h2></div></div>
+
+<div id="risk" class="page"><div class="card">
+<h3>Flight Risk</h3>
+<button class="action" onclick="checkRisk()">Run Analysis</button>
+<p id="riskOut"></p></div></div>
+
+<div id="runway" class="page">
+<div class="card"><h3>Drone Fleet</h3>
+<table class="table">
+<tr><th>Drone</th><th>Area</th><th>Status</th><th>Analysis</th></tr>
+<tr><td>DRN-101</td><td>Runway North</td><td>🟢</td><td>No anomalies detected</td></tr>
+<tr><td>DRN-102</td><td>Center</td><td>🟡</td><td>Surface wear detected</td></tr>
+<tr><td>DRN-103</td><td>Taxiway A</td><td>🔴</td><td>Crack detected</td></tr>
+<tr><td>DRN-104</td><td>Perimeter</td><td>🟢</td><td>Fence secure</td></tr>
+</table>
+<button class="action" onclick="droneAnalysis()">Run Drone Analysis</button>
+<div id="droneResults"></div>
+<p>DRN-101 Runway North</p><p>DRN-102 Center</p><p>DRN-103 Taxiway A</p><p>DRN-104 Perimeter</p>
+</div>
+<div class="card"><h3>Vehicle Tracker</h3>
+<p>Bus A12 → Terminal</p><p>Fuel Truck F07 → Apron</p><p>Fire Unit R03 → Standby</p><p>Maintenance M21 → Hangar</p>
+</div></div>
+
+<div id="engineer" class="page"><div class="card">
+<h3>Engineer Report Entry</h3>
+<input id="engName" placeholder="Engineer Name">
+<input id="aircraftId" placeholder="Aircraft ID">
+<select id="severity"><option>OK</option><option>Warning</option><option>Critical</option></select>
+<textarea id="note" placeholder="Maintenance Notes"></textarea>
+<button class="action" onclick="saveReport()">Save Report</button>
+</div>
+<div class="card"><table class="table"><thead><tr><th>Engineer</th><th>Aircraft</th><th>Severity</th></tr></thead><tbody id="reportTable"></tbody></table></div>
+</div>
+
+<div id="health" class="page"><div class="card">
+<h3>Aircraft Health Monitor</h3>
+<button class="action" onclick="scanAircraft()">Run Diagnostic Scan</button>
+<div id="healthOut"></div>
+</div></div>
+
+<div id="logs" class="page"><div class="card"><div id="logBox" class="log"></div></div></div>
+
+<script>
+function showPage(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');log('Opened '+id);}
+function log(m){document.getElementById('logBox').innerHTML+=new Date().toLocaleTimeString()+' - '+m+'<br>';}
+function predictDelay(){let s=Math.round(weather.value*0.4+traffic.value*0.35+runwayCond.value*0.25);delayOut.innerText='Delay: '+s+'%';log('Delay prediction '+s+'%');}
+function checkRisk(){let d=parseInt(delayOut.innerText.replace(/\D/g,''))||0;riskOut.innerText=d>50?'HIGH RISK':'LOW RISK';log('Risk analysis complete');}
+function saveReport(){
+let tr=document.createElement('tr');
+tr.innerHTML='<td>'+engName.value+'</td><td>'+aircraftId.value+'</td><td>'+severity.value+'</td>';
+reportTable.appendChild(tr);
+localStorage.setItem('reports',reportTable.innerHTML);
+log('Engineer report added');
+}
+function loadReports(){reportTable.innerHTML=localStorage.getItem('reports')||'';}
+function scanAircraft(){
+let temp=Math.floor(Math.random()*50)+50;
+let vib=Math.floor(Math.random()*15);
+let health=100-(temp>85?20:0)-(vib>10?25:0);
+let status=health>80?'HEALTHY':health>60?'WARNING':'CRITICAL';
+healthOut.innerHTML='Engine Temp: '+temp+'°C<br>Vibration: '+vib+'<br>Health Score: '+health+'<br>Status: '+status;
+log('Aircraft diagnostic: '+status);
+}
+let a=0;setInterval(()=>{
+[['a1',130,1],['a2',90,1.3],['a3',55,0.8]].forEach(p=>{
+let e=document.getElementById(p[0]);e.style.left=(175+Math.cos(a*p[2])*p[1])+'px';e.style.top=(175+Math.sin(a*p[2])*p[1])+'px';
+});a+=0.03;
+},30);
+
+function droneAnalysis(){
+ const findings=['Runway clear','Surface crack detected','Debris detected','Lighting fault detected','Water accumulation detected'];
+ let out='';
+ ['DRN-101','DRN-102','DRN-103','DRN-104'].forEach(d=>{
+   out += d+': '+findings[Math.floor(Math.random()*findings.length)]+'<br>';
+ });
+ document.getElementById('droneResults').innerHTML=out;
+ log('Drone analysis completed');
+}
+loadReports();log('AeroGuardian AI initialized');
+
+</script></body></html>
